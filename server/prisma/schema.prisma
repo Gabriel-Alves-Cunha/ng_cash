@@ -1,0 +1,55 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator erd {
+  provider                  = "prisma-erd-generator"
+  theme                     = "forest"
+  includeRelationFromFields = true
+  erdDebug                  = true
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+////////////////////// Models
+
+model User {
+  id String @id @default(uuid())
+
+  username       String @unique
+  hashedPassword String
+
+  Account   Account @relation(fields: [accountId], references: [id])
+  accountId String  @unique // Foreign key to Account's id. (1-1)
+}
+
+model Account {
+  id String @id @default(uuid())
+
+  // transactions Transaction[] // One account to many transactions. (1-n)
+  balance Int
+
+  cash_out Transaction[] @relation("creditedAccount")
+  cash_in  Transaction[] @relation("debitedAccount")
+
+  User User[] // Actually just one (1-1).
+}
+
+model Transaction {
+  id String @id @default(uuid())
+
+  createdAt DateTime @default(now())
+  value     Int
+
+  CreditedAccountId Account @relation(name: "creditedAccount", fields: [creditedAccountId], references: [id])
+  DebitedAccountId  Account @relation(name: "debitedAccount", fields: [debitedAccountId], references: [id])
+
+  debitedAccountId  String
+  creditedAccountId String
+}

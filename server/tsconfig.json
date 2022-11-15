@@ -1,0 +1,55 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "DOM.Iterable",
+      "ESNext",
+      "DOM",
+    ],
+    "noPropertyAccessFromIndexSignature": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+    "strictPropertyInitialization": true,
+    "noFallthroughCasesInSwitch": true,
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true,
+    "experimentalDecorators": false,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "moduleResolution": "Node",
+    "preserveConstEnums": true,
+    "noUnusedParameters": true,
+    "resolveJsonModule": true,
+    "noImplicitReturns": true,
+    "noErrorTruncation": true,
+    "strictNullChecks": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "noImplicitThis": true,
+    "removeComments": true,
+    "noImplicitAny": true,
+    "alwaysStrict": true,
+    "skipLibCheck": true,
+    "module": "NodeNext",
+    "jsx": "react-jsx",
+    "target": "ESNext",
+    "sourceMap": false,
+    "allowJs": true,
+    "checkJs": true,
+    "baseUrl": "./",
+    "pretty": true,
+    "strict": true,
+    "paths": {
+      "@routes/*": [
+        "renderer/routes/*"
+      ],
+      "@utils/*": [
+        "renderer/utils/*"
+      ],
+    },
+  },
+  "exclude": [
+    "**/node_modules",
+    "**/build/*",
+    "**/.*/"
+  ]
+}
