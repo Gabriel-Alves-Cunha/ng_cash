@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeAll, it } from "vitest";
+import { describe, expect, beforeAll, it } from "vitest";
 import { promisify } from "node:util";
 import { exec } from "node:child_process";
 
@@ -38,23 +38,28 @@ beforeAll(async () => {
 ///////////////////////////////////////
 ///////////////////////////////////////
 
-describe("Testing route '/api/user/me' and '/api/user/balance'", () => {
+describe("Testing route '/api/transaction'", () => {
 	///////////////////////////////////////
 	///////////////////////////////////////
 
-	test("Testing getting my user info", async () => {
+	it("should be able to cash out at '/api/transactions'.", async () => {
 		const res = await testServer
-			.get("/api/user/me")
+			.post("/api/transactions/cash-out")
+			.send({})
 			.set({ Authorization: `Bearer ${token}` });
 
-		expect(res.body.user.username).toEqual(user1_info.username);
+		expect(res.body.message).toContain(
+			"Senha deve conter pelo menos uma letra maiúscula."
+		);
 	});
 
-	test("Testing getting balance", async () => {
+	it("should be able to cash out at '/api/transactions'.", async () => {
 		const res = await testServer
-			.get("/api/user/balance")
+			.get("/api/transactions")
 			.set({ Authorization: `Bearer ${token}` });
 
-		expect(res.body.balance).toEqual(100_000);
+		expect(res.body.message).toContain(
+			"Senha deve conter pelo menos uma letra maiúscula."
+		);
 	});
 });

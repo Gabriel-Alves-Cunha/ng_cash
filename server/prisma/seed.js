@@ -1,5 +1,5 @@
-import { PrismaClient } from "@prisma/client";
 import { genSalt, hash } from "bcrypt";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 

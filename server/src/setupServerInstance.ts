@@ -21,6 +21,8 @@ export async function setupServerInstance() {
 	await fastifyInstance.register(userRoutes);
 	await fastifyInstance.register(authRoutes);
 
+	// We have to wait for everything to be ready,
+	// otherwise tests won't work!
 	await fastifyInstance.ready();
 
 	return fastifyInstance;

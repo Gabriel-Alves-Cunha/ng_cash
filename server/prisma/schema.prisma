@@ -32,7 +32,6 @@ model User {
 model Account {
   id String @id @default(uuid())
 
-  // transactions Transaction[] // One account to many transactions. (1-n)
   balance Int
 
   cash_out Transaction[] @relation("creditedAccount")

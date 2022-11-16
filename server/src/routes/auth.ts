@@ -1,5 +1,4 @@
 import type { FastifyInstance } from "fastify";
-import type { User } from "@prisma/client";
 
 import { genSalt, hash, compare } from "bcrypt";
 import { z } from "zod";
@@ -12,7 +11,7 @@ import { prisma } from "../prisma";
 // Main function:
 
 export async function authRoutes(fastify: FastifyInstance) {
-	fastify.post("/auth/login", async req => {
+	fastify.post("/api/auth/login", async req => {
 		/** Todo usuário deverá conseguir logar na aplicação
 		 * informando username e password. Caso o login seja
 		 * bem-sucedido, um token JWT (com 24h de validade)
@@ -23,48 +22,47 @@ export async function authRoutes(fastify: FastifyInstance) {
 		// Get required fields from req.body, this will throw an error if it fails:
 		const { username, plainTextPassword } = userFromBody.parse(req.body);
 
-		// Find user:
-		let user: { hashedPassword: string; id: string } | null = null;
 		try {
-			user = await prisma.user.findUniqueOrThrow({
+			// Find user:
+			const user = await prisma.user.findUniqueOrThrow({
 				select: { hashedPassword: true, id: true },
 				where: { username },
 			});
+
+			// If a user is found, compare user password with hashed password stored in the database:
+			const isPasswordValid = await compare(
+				plainTextPassword,
+				user.hashedPassword
+			);
+
+			if (!isPasswordValid)
+				// Reject user login:
+				return { error: "Invalid password!" };
+
+			// Return a token if successfull:
+			const token = fastify.jwt.sign(
+				{
+					username,
+				},
+				{
+					expiresIn: "24h",
+					sub: user.id, // subject
+				}
+			);
+
+			return { token };
 		} catch (error) {
-			console.error("Error finding unique user at '/auth/login':", error);
+			console.error("Error finding unique user at '/api/auth/login':", error);
 
 			return { error: "User does not exist!" };
 		}
-
-		// If a user is found, compare user password with hashed password stored in the database:
-		const isPasswordValid = await compare(
-			plainTextPassword,
-			user.hashedPassword
-		);
-
-		if (!isPasswordValid)
-			// Reject user login:
-			return { error: "Invalid password!" };
-
-		// Return a token if successfull:
-		const token = fastify.jwt.sign(
-			{
-				username,
-			},
-			{
-				expiresIn: "24h",
-				sub: user.id,
-			}
-		);
-
-		return { token };
 	});
 
 	////////////////////////////////////////////////
 	////////////////////////////////////////////////
 	////////////////////////////////////////////////
 
-	fastify.post("/auth/create-user", async req => {
+	fastify.post("/api/auth/create-user", async req => {
 		/** Qualquer pessoa deverá poder fazer parte da NG.
 		 * Para isso, basta realizar o cadastro informando
 		 * `username` e `password`.
@@ -72,13 +70,11 @@ export async function authRoutes(fastify: FastifyInstance) {
 		// Get user input, validate it;
 		// Get required fields from req.body, this will throw an error if it fails:
 		const { username, plainTextPassword } = userFromBody.parse(req.body);
-		const hashedPassword = await hashPassword(plainTextPassword);
 
-		let user: User | null = null;
 		try {
-			user = await prisma.user.create({
+			const user = await prisma.user.create({
 				data: {
-					hashedPassword,
+					hashedPassword: await hashPassword(plainTextPassword),
 					username,
 
 					/** Durante o processo de cadastro de um novo usuário,
@@ -96,9 +92,21 @@ export async function authRoutes(fastify: FastifyInstance) {
 				},
 			});
 
-			if (!user) return { message: unableToCreateUserError };
+			// Return a token if successfull:
+			const token = fastify.jwt.sign(
+				{
+					accountId: user.accountId,
+					username,
+				},
+				{
+					expiresIn: "24h",
+					sub: user.id,
+				}
+			);
+
+			return { token };
 		} catch (error) {
-			console.error("Error creating user at '/auth/create-user':", error);
+			console.error("Error creating user at '/api/auth/create-user':", error);
 
 			const isUsernameConstraintError = (error as Error).message.includes(
 				usernameNotUniqueError
@@ -110,19 +118,6 @@ export async function authRoutes(fastify: FastifyInstance) {
 					: unableToCreateUserError,
 			};
 		}
-
-		// Return a token if successfull:
-		const token = fastify.jwt.sign(
-			{
-				username,
-			},
-			{
-				expiresIn: "24h",
-				sub: user.id,
-			}
-		);
-
-		return { token };
 	});
 }
 
@@ -131,9 +126,8 @@ export async function authRoutes(fastify: FastifyInstance) {
 ////////////////////////////////////////////////
 // Helper functions:
 
-async function hashPassword(plaintextPassword: string) {
-	return await hash(plaintextPassword, await genSalt());
-}
+const hashPassword = async (plaintextPassword: string) =>
+	await hash(plaintextPassword, await genSalt());
 
 ////////////////////////////////////////////////
 ////////////////////////////////////////////////
