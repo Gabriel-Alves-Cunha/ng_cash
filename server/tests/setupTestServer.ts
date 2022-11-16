@@ -7,6 +7,6 @@ const server = await setupServerInstance();
 
 export const testServer = supertest(server.server);
 
-afterAll(() => {
-	server.close();
+afterAll(async () => {
+	await server.close();
 });

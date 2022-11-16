@@ -7,12 +7,13 @@
 	"scripts": {
 		"ts:check": "tsc --noEmit --pretty --extendedDiagnostics",
 		"start": "node --trace-warnings build/startServer.js",
+		"reset-database": "prisma migrate reset --force",
 		"build": "vite build",
 		"test": "vitest",
 		"dev": "vite"
 	},
 	"prisma": {
-		"seed": "vite build prisma/seed.ts | node"
+		"seed": "node ./prisma/seed.js"
 	},
 	"dependencies": {
 		"@fastify/cors": "^8.2.0",

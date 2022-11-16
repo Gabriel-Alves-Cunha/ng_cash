@@ -81,6 +81,7 @@ export default defineConfig(() => {
 		test: {
 			setupFiles: "./tests/setupTestServer.ts",
 			logHeapUsage: true,
+			threads: false,
 			dir: "tests",
 			coverage: {
 				// reporter: ["html", "text"],

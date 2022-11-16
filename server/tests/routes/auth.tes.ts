@@ -1,7 +1,17 @@
-import { describe, test, expect } from "vitest";
+import { describe, test, expect, beforeAll } from "vitest";
+import { promisify } from "node:util";
+import { exec } from "node:child_process";
 
 import { testServer } from "../setupTestServer";
-import { log } from "../../src/utils";
+
+///////////////////////////////////////
+///////////////////////////////////////
+
+beforeAll(async () => {
+	console.time("Reseting db");
+	await promisify(exec)("yarn reset-database");
+	console.timeEnd("Reseting db");
+});
 
 ///////////////////////////////////////
 ///////////////////////////////////////
@@ -16,42 +26,41 @@ describe("Testing route '/auth/login' and 'auth/create-user'", () => {
 	///////////////////////////////////////
 
 	test("Testing password without uppercase letter at 'auth/login'; should fail.", async () => {
-		const response = await testServer
+		const res = await testServer
 			.post("/auth/login")
 			.send({ username: "Whatever", plainTextPassword: "12345678" });
 
-		expect(response.body.message).toContain(
+		expect(res.body.message).toContain(
 			"Senha deve conter pelo menos uma letra maiúscula."
 		);
 	});
 
 	test("Testing wrong password without uppercase letter at 'auth/create-user'; should fail.", async () => {
-		const response = await testServer
+		const res = await testServer
 			.post("/auth/create-user")
 			.send({ username: "Does Not Matter", plainTextPassword: "12345678" });
 
-		expect(response.body.message).toContain(
+		expect(res.body.message).toContain(
 			"Senha deve conter pelo menos uma letra maiúscula."
 		);
 	});
 
 	test("Testing wrong password without number at 'auth/login'; should fail.", async () => {
-		const response = await testServer
+		const res = await testServer
 			.post("/auth/login")
 			.send({ username: "Does Not Matter", plainTextPassword: "Abcdefgh" });
-		console.log("Test response.body:", response.body);
 
-		expect(response.body.message).toContain(
+		expect(res.body.message).toContain(
 			"Senha deve conter pelo menos um número."
 		);
 	});
 
 	test("Testing wrong password without number 'auth/create-user'; should fail", async () => {
-		const response = await testServer
+		const res = await testServer
 			.post("/auth/create-user")
 			.send({ username: "Does Not Matter", plainTextPassword: "Abcdefgh" });
 
-		expect(response.body.message).toContain(
+		expect(res.body.message).toContain(
 			"Senha deve conter pelo menos um número."
 		);
 	});
@@ -59,30 +68,26 @@ describe("Testing route '/auth/login' and 'auth/create-user'", () => {
 	///////////////////////////////////////
 	///////////////////////////////////////
 
-	test.only("Testing creating user, should work", async () => {
-		const response = await testServer.post("/auth/create-user").send(user);
+	test("Testing creating user, should work", async () => {
+		const res = await testServer.post("/auth/create-user").send(user);
 
-		console.log("response:", response.body); // I'm on this!!
-
-		expect(response.body).toHaveProperty("token");
+		expect(res.body).toHaveProperty("token");
 	});
 
 	test("Testing creating user, should fail username constraint", async () => {
-		const response = await testServer.post("/auth/create-user").send(user);
+		const res = await testServer.post("/auth/create-user").send(user);
 
-		console.log("Should fail username constraint:", response.body);
-
-		expect(response.body).toHaveProperty("token");
+		expect(res.body.message).toContain(
+			"Unique constraint failed on the fields: (`username`)"
+		);
 	});
 
 	///////////////////////////////////////
 	///////////////////////////////////////
 
 	test("Testing login", async () => {
-		const response = await testServer.post("/auth/login").send(user);
+		const res = await testServer.post("/auth/login").send(user);
 
-		log(response.body);
-
-		expect(response.body).toHaveProperty("token");
+		expect(res.body).toHaveProperty("token");
 	});
 });

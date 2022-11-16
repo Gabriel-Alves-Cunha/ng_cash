@@ -1,36 +1,46 @@
 import type { FastifyInstance } from "fastify";
-import { PrismaClient } from "@prisma/client";
+import type { User } from "@prisma/client";
 
 import { genSalt, hash, compare } from "bcrypt";
 import { z } from "zod";
 
 import { prisma } from "../prisma";
 
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+// Main function:
+
 export async function authRoutes(fastify: FastifyInstance) {
 	fastify.post("/auth/login", async req => {
+		/** Todo usuário deverá conseguir logar na aplicação
+		 * informando username e password. Caso o login seja
+		 * bem-sucedido, um token JWT (com 24h de validade)
+		 * deverá ser fornecido.
+		 */
+
 		// Get user input, validate it;
 		// Get required fields from req.body, this will throw an error if it fails:
 		const { username, plainTextPassword } = userFromBody.parse(req.body);
 
-		console.error("authRoutes", { username, plainTextPassword });
-
 		// Find user:
-		const user = await prisma.user.findUnique({
-			select: { hashedPassword: true, id: true },
-			where: { username },
-		});
+		let user: { hashedPassword: string; id: string } | null = null;
+		try {
+			user = await prisma.user.findUniqueOrThrow({
+				select: { hashedPassword: true, id: true },
+				where: { username },
+			});
+		} catch (error) {
+			console.error("Error finding unique user at '/auth/login':", error);
 
-		console.error("authRoutes.user", user);
-
-		if (!user) return { error: "User does not exist!" };
+			return { error: "User does not exist!" };
+		}
 
 		// If a user is found, compare user password with hashed password stored in the database:
 		const isPasswordValid = await compare(
 			plainTextPassword,
 			user.hashedPassword
 		);
-
-		console.error("authRoutes", { isPasswordValid });
 
 		if (!isPasswordValid)
 			// Reject user login:
@@ -47,10 +57,12 @@ export async function authRoutes(fastify: FastifyInstance) {
 			}
 		);
 
-		console.error("authRoutes.token", token);
-
 		return { token };
 	});
+
+	////////////////////////////////////////////////
+	////////////////////////////////////////////////
+	////////////////////////////////////////////////
 
 	fastify.post("/auth/create-user", async req => {
 		/** Qualquer pessoa deverá poder fazer parte da NG.
@@ -62,33 +74,42 @@ export async function authRoutes(fastify: FastifyInstance) {
 		const { username, plainTextPassword } = userFromBody.parse(req.body);
 		const hashedPassword = await hashPassword(plainTextPassword);
 
-		let prismaErrorCreatingUser = null;
-		const user = await prisma.user
-			.create({
+		let user: User | null = null;
+		try {
+			user = await prisma.user.create({
 				data: {
 					hashedPassword,
 					username,
 
+					/** Durante o processo de cadastro de um novo usuário,
+					 * sua respectiva conta deverá ser criada automaticamente
+					 * na tabela Accounts com um balance de R$ 100,00.
+					 * É importante ressaltar que caso ocorra algum problema
+					 * e o usuário não seja criado, a tabela Accounts não
+					 * deverá ser afetada.
+					 */
 					Account: {
 						create: {
 							balance: 100_000, // R$ 100,00 em centavos.
 						},
 					},
 				},
-			})
-			.catch(err => {
-				prismaErrorCreatingUser = err as Error;
-				console.error(err);
-				return null;
 			});
 
-		console.error("authRoutes", { user, prismaErrorCreatingUser });
+			if (!user) return { message: unableToCreateUserError };
+		} catch (error) {
+			console.error("Error creating user at '/auth/create-user':", error);
 
-		if (!user)
+			const isUsernameConstraintError = (error as Error).message.includes(
+				usernameNotUniqueError
+			);
+
 			return {
-				message: "Unable to create user at database!",
-				error: prismaErrorCreatingUser,
+				message: isUsernameConstraintError
+					? usernameNotUniqueError
+					: unableToCreateUserError,
 			};
+		}
 
 		// Return a token if successfull:
 		const token = fastify.jwt.sign(
@@ -105,9 +126,29 @@ export async function authRoutes(fastify: FastifyInstance) {
 	});
 }
 
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+// Helper functions:
+
 async function hashPassword(plaintextPassword: string) {
 	return await hash(plaintextPassword, await genSalt());
 }
+
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+// Errors:
+
+const usernameNotUniqueError =
+	"Unique constraint failed on the fields: (`username`)";
+
+const unableToCreateUserError = "Unable to create user at database!";
+
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+// Validation:
 
 const numbers = /[0-9]/g;
 
