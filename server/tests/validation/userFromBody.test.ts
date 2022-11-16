@@ -2,16 +2,19 @@ import type { ZodError } from "zod";
 
 import { describe, expect, it } from "vitest";
 
-import { userFromBody } from "src/routes/auth";
+import { userFromBody } from "src/validation/user";
+import { log } from "src/utils";
 
-describe("Testing userFromBody validation", () => {
+describe.only("Testing userFromBody validation", () => {
 	it("should fail username too small", () => {
 		try {
 			userFromBody.parse({ username: "ab" });
 		} catch (error) {
 			const { message } = error as ZodError;
 
-			expect(message).toContain("Nome deve conter pelo menos 3 caracteres.");
+			log({ "name too small": 1, message });
+
+			expect(message).toContain("Nome de usuário deve ter pelo menos");
 		}
 	});
 
@@ -21,7 +24,9 @@ describe("Testing userFromBody validation", () => {
 		} catch (error) {
 			const { message } = error as ZodError;
 
-			expect(message).toContain("Nome deve conter no máximo 100 caracteres.");
+			log({ "name too big": 1, message });
+
+			expect(message).toContain("Nome de usuário deve ter no máximo");
 		}
 	});
 
@@ -31,7 +36,7 @@ describe("Testing userFromBody validation", () => {
 		} catch (error) {
 			const { message } = error as ZodError;
 
-			expect(message).toContain("Senha deve conter pelo menos 8 caracteres.");
+			expect(message).toContain("Senha deve ter pelo menos");
 		}
 	});
 
@@ -41,7 +46,7 @@ describe("Testing userFromBody validation", () => {
 		} catch (error) {
 			const { message } = error as ZodError;
 
-			expect(message).toContain("Senha deve conter no máximo 30 caracteres.");
+			expect(message).toContain("Senha deve ter no máximo");
 		}
 	});
 

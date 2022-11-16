@@ -20,31 +20,37 @@ const user1_info = {
 	};
 
 async function main() {
-	const user_1 = await prisma.user.create({
-		data: {
-			hashedPassword: await hashPassword(user1_info.plainTextPassword),
-			username: user1_info.username,
+	try {
+		const user_1 = await prisma.user.create({
+			data: {
+				hashedPassword: await hashPassword(user1_info.plainTextPassword),
+				username: user1_info.username,
 
-			Account: {
-				create: {
-					balance: 100_000, // R$ 100,00 em centavos.
+				Account: {
+					create: {
+						balance: 100_000, // R$ 100,00 em centavos.
+					},
 				},
 			},
-		},
-	});
+		});
 
-	const user_2 = await prisma.user.create({
-		data: {
-			hashedPassword: await hashPassword(user2_info.plainTextPassword),
-			username: user2_info.username,
+		const user_2 = await prisma.user.create({
+			data: {
+				hashedPassword: await hashPassword(user2_info.plainTextPassword),
+				username: user2_info.username,
 
-			Account: {
-				create: {
-					balance: 100_000, // R$ 100,00 em centavos.
+				Account: {
+					create: {
+						balance: 100_000, // R$ 100,00 em centavos.
+					},
 				},
 			},
-		},
-	});
+		});
+
+		console.log("user_1:", user_1, "\n\nuser_2:", user_2);
+	} catch (error) {
+		console.error("Error seeding database:", error);
+	}
 }
 
 main().catch(e => {

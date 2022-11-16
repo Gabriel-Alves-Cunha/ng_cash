@@ -10,11 +10,16 @@ import { testServer } from "../setupTestServer";
 // The same from ../../prisma/seed.js
 // vitest cannot import it :[
 const user1_info = {
-	plainTextPassword: "A2345678",
-	username: "Fulano Alves",
-};
+		plainTextPassword: "A2345678",
+		username: "Fulano Alves",
+	},
+	user2_info = {
+		plainTextPassword: "B2345678",
+		username: "Sicrano Cunha",
+	};
 
-let token = "";
+let token_user_1 = "",
+	token_user_2 = "";
 
 beforeAll(async () => {
 	console.time("Reseting db");
@@ -23,9 +28,13 @@ beforeAll(async () => {
 
 	// Login with a user:
 	try {
-		const { body } = await testServer.post("/api/auth/login").send(user1_info);
+		const user1 = await testServer.post("/api/auth/login").send(user1_info);
 
-		token = body.token;
+		token_user_1 = user1.body.token;
+
+		const user2 = await testServer.post("/api/auth/login").send(user2_info);
+
+		token_user_2 = user2.body.token;
 
 		// console.error("User logged in! token =", token, "\nres.body =", body);
 	} catch (error) {
@@ -38,28 +47,42 @@ beforeAll(async () => {
 ///////////////////////////////////////
 ///////////////////////////////////////
 
-describe("Testing route '/api/transaction'", () => {
+describe("Testing route '/api/transactions'", () => {
 	///////////////////////////////////////
 	///////////////////////////////////////
 
-	it("should be able to cash out at '/api/transactions'.", async () => {
+	it("should be able to cash out at '/api/transactions/cash_out.", async () => {
 		const res = await testServer
 			.post("/api/transactions/cash-out")
-			.send({})
-			.set({ Authorization: `Bearer ${token}` });
+			.send({
+				username_to_cash_in_to: user2_info.username,
+				amount_to_cash_out: 50_000,
+			})
+			.set({ Authorization: `Bearer ${token_user_1}` });
 
-		expect(res.body.message).toContain(
-			"Senha deve conter pelo menos uma letra maiúscula."
-		);
+		expect(res.body.balance).toBe(50_000);
+		expect(res.body.success).toBe(true);
 	});
 
-	it("should be able to cash out at '/api/transactions'.", async () => {
+	it("should be able to cash out at '/api/transactions/cash_out.", async () => {
+		const res = await testServer
+			.post("/api/transactions/cash-out")
+			.send({
+				username_to_cash_in_to: user1_info.username,
+				amount_to_cash_out: 70_000,
+			})
+			.set({ Authorization: `Bearer ${token_user_2}` });
+
+		expect(res.body.balance).toBe(80_000);
+		expect(res.body.success).toBe(true);
+	});
+
+	it("should get all transactions at '/api/transactions'.", async () => {
 		const res = await testServer
 			.get("/api/transactions")
-			.set({ Authorization: `Bearer ${token}` });
+			.set({ Authorization: `Bearer ${token_user_1}` });
 
-		expect(res.body.message).toContain(
-			"Senha deve conter pelo menos uma letra maiúscula."
-		);
+		expect(res.body.cash_out).toHaveLength(1);
+		expect(res.body.cash_in).toHaveLength(1);
 	});
 });

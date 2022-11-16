@@ -1,8 +1,8 @@
 import type { FastifyInstance } from "fastify";
 
 import { genSalt, hash, compare } from "bcrypt";
-import { z } from "zod";
 
+import { userFromBody } from "../validation/user";
 import { prisma } from "../prisma";
 
 ////////////////////////////////////////////////
@@ -109,13 +109,13 @@ export async function authRoutes(fastify: FastifyInstance) {
 			console.error("Error creating user at '/api/auth/create-user':", error);
 
 			const isUsernameConstraintError = (error as Error).message.includes(
-				usernameNotUniqueError
+				usernameNotUnique_Error
 			);
 
 			return {
 				message: isUsernameConstraintError
-					? usernameNotUniqueError
-					: unableToCreateUserError,
+					? usernameNotUnique_Error
+					: unableToCreateUser_Error,
 			};
 		}
 	});
@@ -134,49 +134,6 @@ const hashPassword = async (plaintextPassword: string) =>
 ////////////////////////////////////////////////
 // Errors:
 
-const usernameNotUniqueError =
-	"Unique constraint failed on the fields: (`username`)";
-
-const unableToCreateUserError = "Unable to create user at database!";
-
-////////////////////////////////////////////////
-////////////////////////////////////////////////
-////////////////////////////////////////////////
-// Validation:
-
-const numbers = /[0-9]/g;
-
-export const userFromBody = z.object({
-	/** Deve-se garantir que cada username seja único
-	 * e composto por, pelo menos, 3 caracteres.
-	 */
-	username: z
-		.string()
-		.min(3, "Nome deve conter pelo menos 3 caracteres.")
-		.max(100, "Nome deve conter no máximo 100 caracteres."),
-	/** Deve-se garantir que a password seja composta por
-	 * pelo menos 8 caracteres, um número e uma letra
-	 * maiúscula. Lembre-se que ela deverá ser hashada
-	 * ao ser armazenada no banco.
-	 */
-	plainTextPassword: z
-		.string()
-		.min(8, "Senha deve conter pelo menos 8 caracteres.")
-		.max(30, "Senha deve conter no máximo 30 caracteres.")
-		.refine(str => {
-			let isAtLeastOneCharUppercase = false;
-
-			for (const char of str)
-				if (char === char.toUpperCase() && !char.match(numbers)) {
-					isAtLeastOneCharUppercase = true;
-					break;
-				}
-
-			return isAtLeastOneCharUppercase;
-		}, "Senha deve conter pelo menos uma letra maiúscula.")
-		.refine(str => {
-			const isAtLeastOneCharANumber = (str.match(numbers) ?? []).length > 0;
-
-			return isAtLeastOneCharANumber;
-		}, "Senha deve conter pelo menos um número."),
-});
+const usernameNotUnique_Error =
+		"Unique constraint failed on the fields: (`username`)",
+	unableToCreateUser_Error = "Unable to create user at database!";

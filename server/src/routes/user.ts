@@ -28,12 +28,14 @@ export async function userRoutes(fastify: FastifyInstance) {
 		 * por exemplo.
 		 */
 		try {
-			const user = await prisma.user.findUniqueOrThrow({
+			const {
+				Account: { balance },
+			} = await prisma.user.findUniqueOrThrow({
 				where: { id: req.user.sub },
 				select: { Account: true },
 			});
 
-			return { balance: user.Account.balance };
+			return { balance };
 		} catch (error) {
 			console.error("Error reading user's user at '/api/user/balance':", error);
 
