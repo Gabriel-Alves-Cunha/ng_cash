@@ -1,8 +1,8 @@
-// Get enviroment variables and varify they exist:
+// Get enviroment variables and verify they exist:
 // @ts-ignore => This can only be accessed through dot notation:
-export const jwtSecret = process.env.JWT_SECRET as string;
+export const jwtSecret = import.meta.env.VITE_JWT_SECRET;
 // @ts-ignore => This can only be accessed through dot notation:
-export const port = Number(process.env.PORT);
+export const port = Number(import.meta.env.VITE_PORT);
 
 if (!jwtSecret) {
 	console.error("JWT_SECRET is not defined on .env!");

@@ -77,10 +77,12 @@ describe("Testing route '/api/transactions'", () => {
 		expect(res.body.success).toBe(true);
 	});
 
-	it("should get all transactions at '/api/transactions'.", async () => {
+	it("should get all transactions at '/api/transactions-filtered?filter_by=date&order_by=asc'.", async () => {
 		const res = await testServer
-			.get("/api/transactions")
+			.get("/api/transactions-filtered?filter_by=date&order_by=asc")
 			.set({ Authorization: `Bearer ${token_user_1}` });
+
+		console.log("On filter by date and order asc:", res.body);
 
 		expect(res.body.cash_out).toHaveLength(1);
 		expect(res.body.cash_in).toHaveLength(1);

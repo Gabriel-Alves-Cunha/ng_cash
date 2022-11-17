@@ -38,7 +38,7 @@ beforeAll(async () => {
 ///////////////////////////////////////
 ///////////////////////////////////////
 
-describe.skip("Testing route '/api/user/me' and '/api/user/balance'", () => {
+describe("Testing route '/api/user/me'", () => {
 	///////////////////////////////////////
 	///////////////////////////////////////
 
@@ -48,13 +48,6 @@ describe.skip("Testing route '/api/user/me' and '/api/user/balance'", () => {
 			.set({ Authorization: `Bearer ${token}` });
 
 		expect(res.body.user.username).toEqual(user1_info.username);
-	});
-
-	test("Testing getting balance", async () => {
-		const res = await testServer
-			.get("/api/user/balance")
-			.set({ Authorization: `Bearer ${token}` });
-
-		expect(res.body.balance).toEqual(100_000);
+		expect(res.body.user.Account.balance).toEqual(100_000);
 	});
 });

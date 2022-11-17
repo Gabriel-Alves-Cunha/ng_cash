@@ -10,12 +10,13 @@ generator erd {
   provider                  = "prisma-erd-generator"
   theme                     = "forest"
   includeRelationFromFields = true
-  erdDebug                  = true
+  erdDebug                  = false
 }
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  url      = "file:./dev.db"
+  // url      = env("DATABASE_URL")
 }
 
 ////////////////////// Models

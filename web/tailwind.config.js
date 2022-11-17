@@ -19,6 +19,12 @@ module.exports = {
 
 				"button-secondary": "#0497c4",
 				"button-secondary-hovered": "#048ab3",
+
+				"button-aside": "transparent",
+				"button-aside-hovered": "#2F80ED30",
+
+				"dashboard-secondary": "#ffffff",
+				"dashboard-primary": "#F5F5F5",
 			},
 		},
 	},

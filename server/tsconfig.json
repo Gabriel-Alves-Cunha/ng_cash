@@ -39,11 +39,20 @@
     "pretty": true,
     "strict": true,
     "paths": {
-      "@routes/*": [
-        "renderer/routes/*"
+      "#validation/*": [
+        "src/validation/*"
       ],
-      "@utils/*": [
-        "renderer/utils/*"
+      "#plugins/*": [
+        "src/plugins/*"
+      ],
+      "#routes/*": [
+        "src/routes/*"
+      ],
+      "#tests/*": [
+        "tests/*"
+      ],
+      "#src/*": [
+        "src/*"
       ],
     },
   },

@@ -3,16 +3,13 @@ import type { ZodError } from "zod";
 import { describe, expect, it } from "vitest";
 
 import { userFromBody } from "src/validation/user";
-import { log } from "src/utils";
 
-describe.only("Testing userFromBody validation", () => {
+describe("Testing userFromBody validation", () => {
 	it("should fail username too small", () => {
 		try {
 			userFromBody.parse({ username: "ab" });
 		} catch (error) {
 			const { message } = error as ZodError;
-
-			log({ "name too small": 1, message });
 
 			expect(message).toContain("Nome de usuário deve ter pelo menos");
 		}
@@ -23,8 +20,6 @@ describe.only("Testing userFromBody validation", () => {
 			userFromBody.parse({ username: "a".repeat(101) });
 		} catch (error) {
 			const { message } = error as ZodError;
-
-			log({ "name too big": 1, message });
 
 			expect(message).toContain("Nome de usuário deve ter no máximo");
 		}

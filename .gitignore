@@ -13,6 +13,14 @@ dist-ssr
 *.local
 build
 debug
+out
+.next
+.vercel
+next-env.d.ts
+
+# Enviroment
+.env
+!.env.example
 
 # Editor directories and files
 .vscode/*

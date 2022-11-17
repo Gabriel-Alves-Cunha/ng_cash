@@ -10,6 +10,9 @@
 		"web"
 	],
 	"scripts": {
-		"dev": ""
+		"dev": "concurrently \"yarn workspace server dev\" \"yarn workspace web dev\""
+	},
+	"devDependencies": {
+		"concurrently": "^7.5.0"
 	}
 }

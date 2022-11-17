@@ -1,7 +1,10 @@
 import type { FastifyInstance } from "fastify";
 
-import { cashOutInformationFromBody } from "../validation/transaction";
-import { authenticate } from "../plugins/authenticate";
+import {
+	cashOutInformationFromBody,
+	filterByFromQuery,
+} from "#validation/transaction";
+import { authenticate } from "#plugins/authenticate";
 import { prisma } from "../prisma";
 import { log } from "../utils";
 
@@ -24,7 +27,7 @@ export async function transactionRoutes(fastify: FastifyInstance) {
 			// Can't send a transaction to yourself:
 			if (req.user.username === username_to_cash_in_to)
 				return {
-					error: "You cannot send a transaction to yourself.",
+					message: "You cannot send a transaction to yourself.",
 					success: false,
 				};
 
@@ -108,12 +111,19 @@ export async function transactionRoutes(fastify: FastifyInstance) {
 			} catch (error) {
 				console.error("Error cashing out:", error);
 
-				return { success: false, error };
+				return { success: false, message: error };
 			}
 		}
 	);
 
 	fastify.get("/api/transactions", { onRequest: [authenticate] }, async req => {
+		/** Todo usuário logado (ou seja, que apresente um token válido)
+		 * deverá ser capaz de visualizar as transações financeiras
+		 * (cash-out e cash-in) que participou. Caso o usuário não
+		 * tenha participado de uma determinada transação, ele nunca
+		 * poderá ter acesso à ela.
+		 */
+
 		try {
 			// Get all Transactions
 			const allTransactions = await prisma.account
@@ -143,7 +153,79 @@ export async function transactionRoutes(fastify: FastifyInstance) {
 				error
 			);
 
-			return { error };
+			return { message: error };
 		}
 	});
+
+	fastify.get(
+		"/api/transactions-filtered",
+		{
+			onRequest: [authenticate],
+			schema: {
+				querystring: {
+					additional_filter: { type: "string" },
+					filter_by: { type: "string" },
+					order_by: { type: "string" },
+				},
+			},
+		},
+		async req => {
+			/** Todo usuário logado (ou seja, que apresente um token válido)
+			 * deverá ser capaz de filtrar as transações financeiras que
+			 * participou por:
+			 * * Data de realização da transação e/ou
+			 * * cash_out
+			 * * cash_in
+			 */
+
+			const { filter_by, order_by, additional_filter } =
+				filterByFromQuery.parse(req.query);
+
+			try {
+				// Get all Transactions with filter
+				const allTransactions = await prisma.account
+					.findMany({
+						where: {
+							User: { every: { id: req.user.sub } },
+						},
+						select: {
+							cash_in:
+								additional_filter === "cash_in" ||
+								filter_by === "cash_in" ||
+								filter_by === "date"
+									? { orderBy: { createdAt: order_by ?? "asc" } }
+									: false,
+
+							cash_out:
+								additional_filter === "cash_out" ||
+								filter_by === "cash_out" ||
+								filter_by === "date"
+									? { orderBy: { createdAt: order_by ?? "asc" } }
+									: false,
+						},
+					})
+					.catch(err => {
+						throw new Error(
+							"Error finding all accounts with all transactions: " + err
+						);
+					});
+
+				log({
+					"Transactions by account": allTransactions,
+				});
+
+				return {
+					cash_out: allTransactions[0]!.cash_out,
+					cash_in: allTransactions[0]!.cash_in,
+				};
+			} catch (error) {
+				console.error(
+					"Error getting transactions at '/api/transactions':",
+					error
+				);
+
+				return { message: error };
+			}
+		}
+	);
 }

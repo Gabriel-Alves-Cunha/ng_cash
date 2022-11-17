@@ -2,10 +2,21 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import Image from "next/image";
 
-import { baseUrl } from "lib/backend";
+import { Button } from "components/Button";
+import { api } from "lib/axios";
 
 import bgHome from "../public/bg-home.png";
 import logo from "../public/logo.svg";
+
+// Test users from server/prisma/seed.js
+const user1_info = {
+		plainTextPassword: "A2345678",
+		username: "Fulano Alves",
+	},
+	user2_info = {
+		plainTextPassword: "B2345678",
+		username: "Sicrano Cunha",
+	};
 
 /** Página para realizar o cadastro ou login na NG informando username e password. */
 export default function Home() {
@@ -17,27 +28,24 @@ export default function Home() {
 
 		const formData = new FormData(e.target as HTMLFormElement);
 		const formEntries = {
-			plainTextPassword: formData.get("plainTextPassword"),
-			username: formData.get("username"),
+			plainTextPassword: formData.get("plainTextPassword") as string,
+			username: formData.get("username") as string,
 		};
-		const url = baseUrl + "/api/auth/" + apiToCall;
+		const url = "/api/auth/" + apiToCall;
 
 		try {
-			const res = await fetch(url, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Accept: "application/json",
-				},
-				body: JSON.stringify(formEntries),
-			});
+			const { data } = await api.post<LoginOrCreateUserResponse>(
+				url,
+				formEntries
+			);
 
-			const json: LoginOrCreateUserResponse = await res.json();
+			if (data.message) throw new Error(data.message);
+			if (!data.token)
+				throw new Error("Token not present! This should never happen!");
 
-			if (json.message) console.error("Error =", json.message);
-			if (json.token) console.log("Token = ", json.token);
+			api.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
 
-			// router.push();
+			await router.push("/user");
 		} catch (error) {
 			console.error("Error fetching " + url, error);
 
@@ -100,19 +108,19 @@ export default function Home() {
 					</label>
 
 					{apiToCall === "login" ? (
-						<button
-							className="mt-16 h-12 bg-button-primary text-white font-bold rounded-[5px] hover:bg-button-primary-hovered duration-200"
+						<Button
+							className="mt-16"
+							variant="primary"
+							title="Entrar"
 							type="submit"
-						>
-							Entrar
-						</button>
+						/>
 					) : (
-						<button
-							className="mt-16 h-12 bg-button-secondary text-white font-bold rounded-[5px] hover:bg-button-secondary-hovered duration-200"
+						<Button
+							variant="secondary"
+							title="Cadastrar"
+							className="mt-16"
 							type="submit"
-						>
-							Cadastrar
-						</button>
+						/>
 					)}
 
 					<button

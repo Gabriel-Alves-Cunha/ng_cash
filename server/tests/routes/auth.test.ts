@@ -16,7 +16,7 @@ beforeAll(async () => {
 ///////////////////////////////////////
 ///////////////////////////////////////
 
-describe.skip("Testing route '/api/auth/login' and '/api/auth/create-user'", () => {
+describe("Testing route '/api/auth/login' and '/api/auth/create-user'", () => {
 	const user = {
 		plainTextPassword: "A1234567",
 		username: "Fulano Sicrano",
@@ -29,6 +29,8 @@ describe.skip("Testing route '/api/auth/login' and '/api/auth/create-user'", () 
 		const res = await testServer
 			.post("/api/auth/login")
 			.send({ username: "Whatever", plainTextPassword: "12345678" });
+
+		console.log("res.body =", res.body);
 
 		expect(res.body.message).toContain(
 			"Senha deve conter pelo menos uma letra maiúscula."

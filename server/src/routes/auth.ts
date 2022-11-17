@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 
 import { genSalt, hash, compare } from "bcrypt";
 
-import { userFromBody } from "../validation/user";
+import { userFromBody } from "#validation/user";
 import { prisma } from "../prisma";
 
 ////////////////////////////////////////////////
@@ -37,7 +37,7 @@ export async function authRoutes(fastify: FastifyInstance) {
 
 			if (!isPasswordValid)
 				// Reject user login:
-				return { error: "Invalid password!" };
+				return { message: "Invalid password!" };
 
 			// Return a token if successfull:
 			const token = fastify.jwt.sign(
@@ -54,7 +54,7 @@ export async function authRoutes(fastify: FastifyInstance) {
 		} catch (error) {
 			console.error("Error finding unique user at '/api/auth/login':", error);
 
-			return { error: "User does not exist!" };
+			return { message: "User does not exist!" };
 		}
 	});
 
