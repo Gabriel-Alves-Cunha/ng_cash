@@ -3,9 +3,9 @@
     "lib": [
       "DOM.Iterable",
       "ESNext",
-      "DOM",
+      "DOM"
     ],
-    "noPropertyAccessFromIndexSignature": true,
+    "noPropertyAccessFromIndexSignature": false,
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
     "strictPropertyInitialization": true,
@@ -29,27 +29,34 @@
     "noImplicitAny": true,
     "alwaysStrict": true,
     "skipLibCheck": true,
-    "module": "NodeNext",
-    "jsx": "react-jsx",
+    "incremental": true,
+    "module": "esnext",
     "target": "ESNext",
     "sourceMap": false,
+    "jsx": "preserve",
     "allowJs": true,
     "checkJs": true,
     "baseUrl": "./",
     "pretty": true,
     "strict": true,
+    "noEmit": true,
     "paths": {
       "@routes/*": [
         "renderer/routes/*"
       ],
       "@utils/*": [
         "renderer/utils/*"
-      ],
+      ]
     },
   },
   "exclude": [
     "**/node_modules",
     "**/build/*",
     "**/.*/"
+  ],
+  "include": [
+    "next-env.d.ts",
+    "**/*.tsx",
+    "**/*.ts"
   ]
 }
