@@ -6,6 +6,9 @@ module.exports = {
 	],
 	theme: {
 		extend: {
+			colors: {
+				accent: "#2F80ED80",
+			},
 			textColor: {
 				primary: "#1A202C",
 				secondary: "#4A5568",
@@ -21,7 +24,7 @@ module.exports = {
 				"button-secondary-hovered": "#048ab3",
 
 				"button-aside": "transparent",
-				"button-aside-hovered": "#2F80ED30",
+				"button-aside-hovered": "#2F80ED10",
 
 				"dashboard-secondary": "#ffffff",
 				"dashboard-primary": "#F5F5F5",

@@ -9,17 +9,17 @@ import bgHome from "../public/bg-home.png";
 import logo from "../public/logo.svg";
 
 // Test users from server/prisma/seed.js
-const user1_info = {
-		plainTextPassword: "A2345678",
-		username: "Fulano Alves",
-	},
-	user2_info = {
-		plainTextPassword: "B2345678",
-		username: "Sicrano Cunha",
-	};
+// const user1_info = {
+// 		plainTextPassword: "A2345678",
+// 		username: "Fulano Alves",
+// 	},
+// 	user2_info = {
+// 		plainTextPassword: "B2345678",
+// 		username: "Sicrano Cunha",
+// 	};
 
 /** Página para realizar o cadastro ou login na NG informando username e password. */
-export default function Home() {
+export default function Index() {
 	const [apiToCall, setApiToCall] = useState<"create-user" | "login">("login");
 	const router = useRouter();
 
