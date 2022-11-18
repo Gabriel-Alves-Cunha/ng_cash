@@ -1,25 +1,31 @@
 import type { Transaction } from "../../server/src/@types/my-prisma-types";
+import type { AxiosError } from "axios";
 
 import useSWR from "swr";
 
 import { api } from "lib/axios";
 
 export function useTransactions() {
-	const { data: transactions, error, mutate } = useSWR<TransactionResponse>(
+	const { data, error, mutate } = useSWR<TransactionResponse, AxiosError>(
 		"/api/transactions",
 		api
 	);
 
 	return {
-		isLoading: !error && !transactions,
-		transactions,
+		transactions: {
+			cash_out: data?.body?.cash_out,
+			cash_in: data?.body?.cash_in,
+		},
+		error: data?.body?.message || error?.message,
+		isLoading: !error && !data,
 		mutate,
-		error,
 	};
 }
 
-type TransactionResponse = {
-	cash_out: Transaction[];
-	cash_in: Transaction[];
-	message?: string;
-};
+interface TransactionResponse {
+	body?: {
+		cash_out: Transaction[];
+		cash_in: Transaction[];
+		message?: string;
+	};
+}

@@ -14,7 +14,7 @@ const user1_info = {
 	username: "Fulano Alves",
 };
 
-let token = "";
+let authToken = "";
 
 beforeAll(async () => {
 	console.time("Reseting db");
@@ -25,9 +25,9 @@ beforeAll(async () => {
 	try {
 		const { body } = await testServer.post("/api/auth/login").send(user1_info);
 
-		token = body.token;
+		authToken = body.authToken;
 
-		// console.error("User logged in! token =", token, "\nres.body =", body);
+		// console.error("User logged in! authToken =", authToken, "\nres.body =", body);
 	} catch (error) {
 		console.error("Error logging user at 'user.test.ts':", error);
 
@@ -45,7 +45,7 @@ describe("Testing route '/api/user/me'", () => {
 	test("Testing getting my user info", async () => {
 		const res = await testServer
 			.get("/api/user/me")
-			.set({ Authorization: `Bearer ${token}` });
+			.set({ Authorization: `Bearer ${authToken}` });
 
 		expect(res.body.username).toEqual(user1_info.username);
 		expect(res.body.balance).toEqual(100_000);

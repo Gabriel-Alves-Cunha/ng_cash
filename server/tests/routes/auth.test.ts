@@ -73,7 +73,7 @@ describe("Testing route '/api/auth/login' and '/api/auth/create-user'", () => {
 	test("Testing creating user, should work", async () => {
 		const res = await testServer.post("/api/auth/create-user").send(user);
 
-		expect(res.body).toHaveProperty("token");
+		expect(res.body).toHaveProperty("authToken");
 	});
 
 	test("Testing creating user, should fail username constraint", async () => {
@@ -90,6 +90,6 @@ describe("Testing route '/api/auth/login' and '/api/auth/create-user'", () => {
 	test("Testing login", async () => {
 		const res = await testServer.post("/api/auth/login").send(user);
 
-		expect(res.body).toHaveProperty("token");
+		expect(res.body).toHaveProperty("authToken");
 	});
 });

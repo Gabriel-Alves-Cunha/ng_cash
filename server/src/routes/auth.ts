@@ -40,7 +40,7 @@ export async function authRoutes(fastify: FastifyInstance) {
 				return { message: "Invalid password!" };
 
 			// Return a token if successfull:
-			const token = fastify.jwt.sign(
+			const authToken = fastify.jwt.sign(
 				{
 					username,
 				},
@@ -50,7 +50,7 @@ export async function authRoutes(fastify: FastifyInstance) {
 				}
 			);
 
-			return { token };
+			return { authToken };
 		} catch (error) {
 			console.error("Error finding unique user at '/api/auth/login':", error);
 
@@ -93,7 +93,7 @@ export async function authRoutes(fastify: FastifyInstance) {
 			});
 
 			// Return a token if successfull:
-			const token = fastify.jwt.sign(
+			const authToken = fastify.jwt.sign(
 				{
 					accountId: user.accountId,
 					username,
@@ -104,7 +104,7 @@ export async function authRoutes(fastify: FastifyInstance) {
 				}
 			);
 
-			return { token };
+			return { authToken };
 		} catch (error) {
 			console.error("Error creating user at '/api/auth/create-user':", error);
 

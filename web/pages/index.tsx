@@ -40,16 +40,10 @@ export default function Index() {
 			);
 
 			if (data.message) throw new Error(data.message);
-			if (!data.token)
+			if (!data.authToken)
 				throw new Error("Token not present! This should never happen!");
 
-			api.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
-
-			console.log(
-				'api.defaults.headers.common["Authorization"] =',
-				api.defaults.headers.common["Authorization"]
-			);
-
+			localStorage.setItem("authToken", data.authToken);
 
 			await router.push("/user");
 		} catch (error) {
@@ -66,7 +60,7 @@ export default function Index() {
 			<div className="w-1/2 h-full">
 				<Image
 					alt="A mountain with an orange and blue sky."
-					className="h-full aspect-auto"
+					className="h-full w-auto"
 					placeholder="blur"
 					src={bgHome}
 				/>
@@ -138,4 +132,4 @@ export default function Index() {
 	);
 }
 
-type LoginOrCreateUserResponse = { token?: string; message?: string };
+type LoginOrCreateUserResponse = { authToken?: string; message?: string };

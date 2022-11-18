@@ -4,7 +4,6 @@ import Image from "next/image";
 
 import { Separator } from "./Separator";
 import { Button } from "./Button";
-import { api } from "lib/axios";
 
 import logo from "../public/logo.svg";
 
@@ -16,18 +15,8 @@ export function DashboardLayout({ children, buttonActivatedName }: Props) {
 	const gotoMakeTransactions = async () =>
 		await router.push("/make-transaction");
 
-	console.log(
-		'api.defaults.headers.common["Authorization"] =',
-		api.defaults.headers.common["Authorization"]
-	);
-
 	async function logout() {
-		api.defaults.headers.common["Authorization"] = undefined;
-
-		console.log(
-			'api.defaults.headers.common["Authorization"] =',
-			api.defaults.headers.common["Authorization"]
-		);
+		localStorage.removeItem("authToken");
 
 		await router.push("/");
 	}

@@ -19,8 +19,8 @@ const user1_info = {
 		username: "Sicrano Cunha",
 	};
 
-let token_user_1 = "",
-	token_user_2 = "";
+let authToken_user_1 = "",
+	authToken_user_2 = "";
 
 beforeAll(async () => {
 	console.time("Reseting db");
@@ -31,13 +31,13 @@ beforeAll(async () => {
 	try {
 		const user1 = await testServer.post("/api/auth/login").send(user1_info);
 
-		token_user_1 = user1.body.token;
+		authToken_user_1 = user1.body.authToken;
 
 		const user2 = await testServer.post("/api/auth/login").send(user2_info);
 
-		token_user_2 = user2.body.token;
+		authToken_user_2 = user2.body.authToken;
 
-		// console.error("User logged in! token =", token, "\nres.body =", body);
+		// console.error("User logged in! authToken =", authToken, "\nres.body =", authToken);
 	} catch (error) {
 		console.error("Error logging user at 'user.test.ts':", error);
 
@@ -59,7 +59,7 @@ describe("Testing route '/api/transactions'", () => {
 				username_to_cash_in_to: user2_info.username,
 				amount_to_cash_out: 50_000,
 			})
-			.set({ Authorization: `Bearer ${token_user_1}` });
+			.set({ Authorization: `Bearer ${authToken_user_1}` });
 
 		expect(res.body.balance).toBe(50_000);
 		expect(res.body.success).toBe(true);
@@ -72,7 +72,7 @@ describe("Testing route '/api/transactions'", () => {
 				username_to_cash_in_to: user1_info.username,
 				amount_to_cash_out: 70_000,
 			})
-			.set({ Authorization: `Bearer ${token_user_2}` });
+			.set({ Authorization: `Bearer ${authToken_user_2}` });
 
 		expect(res.body.balance).toBe(80_000);
 		expect(res.body.success).toBe(true);
@@ -81,7 +81,7 @@ describe("Testing route '/api/transactions'", () => {
 	it("should get all transactions at '/api/transactions-filtered?filter_by=date&order_by=asc'.", async () => {
 		const res = await testServer
 			.get("/api/transactions-filtered?filter_by=date&order_by=asc")
-			.set({ Authorization: `Bearer ${token_user_1}` });
+			.set({ Authorization: `Bearer ${authToken_user_1}` });
 
 		log("On filter by date and order asc:", res.body);
 

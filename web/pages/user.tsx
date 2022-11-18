@@ -8,14 +8,14 @@ export default function User() {
 
 	console.log("User =", { user, error, isLoading });
 
-	if (error || user?.message)
+	if (error)
 		return (
 			<div className="h-full w-full flex items-center justify-center text-xl font-normal">
-				{error.message || user?.message}
+				{error}
 			</div>
 		);
 
-	if (isLoading || !user)
+	if (isLoading)
 		return (
 			<div className="h-full w-full flex items-center justify-center">
 				<Loading />
@@ -25,12 +25,13 @@ export default function User() {
 	return (
 		<div className="flex flex-col gap-6 text-accent text-lg font-medium">
 			<div className="">
-				Nome de usuário: <span className="text-secondary">{user.username}</span>
+				Nome de usuário:{" "}
+				<span className="text-secondary">{user.username!}</span>
 			</div>
 
 			<div className="">
 				Balança:{" "}
-				<span className="text-secondary">{centavos2reais(user.balance)}</span>
+				<span className="text-secondary">{centavos2reais(user.balance!)}</span>
 			</div>
 		</div>
 	);

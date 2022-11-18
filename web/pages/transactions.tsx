@@ -16,21 +16,21 @@ export default function Transactions() {
 
 	console.log("Transactions =", { transactions, error, isLoading });
 
-	if (error || transactions?.message)
+	if (error)
 		return (
 			<div className="h-full w-full flex items-center justify-center text-xl font-normal">
-				{error.message || transactions?.message}
+				{error}
 			</div>
 		);
 
-	if (!transactions)
+	if (isLoading)
 		return (
 			<div className="h-full w-full flex items-center justify-center">
 				<Loading />
 			</div>
 		);
 
-	const allTransaction = [...transactions.cash_in, ...transactions.cash_out];
+	const allTransaction = [...transactions.cash_in!, ...transactions.cash_out!];
 
 	async function filterOrOrderBy() {
 		await sleep(1_000);
