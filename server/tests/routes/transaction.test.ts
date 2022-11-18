@@ -3,6 +3,7 @@ import { promisify } from "node:util";
 import { exec } from "node:child_process";
 
 import { testServer } from "../setupTestServer";
+import { log } from "#src/utils";
 
 ///////////////////////////////////////
 ///////////////////////////////////////
@@ -82,7 +83,7 @@ describe("Testing route '/api/transactions'", () => {
 			.get("/api/transactions-filtered?filter_by=date&order_by=asc")
 			.set({ Authorization: `Bearer ${token_user_1}` });
 
-		console.log("On filter by date and order asc:", res.body);
+		log("On filter by date and order asc:", res.body);
 
 		expect(res.body.cash_out).toHaveLength(1);
 		expect(res.body.cash_in).toHaveLength(1);

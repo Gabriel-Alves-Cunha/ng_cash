@@ -62,8 +62,10 @@ export async function transactionRoutes(fastify: FastifyInstance) {
 								},
 							},
 							select: {
-								Account: { include: { cash_in: true, cash_out: true } },
-								accountId: true,
+								Account: {
+									// Only getting these for debugging purposes:
+									select: { cash_in: true, cash_out: true },
+								},
 							},
 						})
 						.catch(err => {
@@ -90,7 +92,8 @@ export async function transactionRoutes(fastify: FastifyInstance) {
 								// 	},
 								// },
 							},
-							include: { cash_in: true, cash_out: true },
+							// Only getting these for debugging purposes, except `balance`:
+							select: { cash_in: true, cash_out: true, balance: true },
 						})
 						.catch(err => {
 							throw new Error("Error updating sender's account: " + err);
@@ -193,14 +196,34 @@ export async function transactionRoutes(fastify: FastifyInstance) {
 								additional_filter === "cash_in" ||
 								filter_by === "cash_in" ||
 								filter_by === "date"
-									? { orderBy: { createdAt: order_by ?? "asc" } }
+									? {
+											orderBy: { createdAt: order_by ?? "asc" },
+											include: {
+												CreditedAccountId: {
+													select: { User: { select: { username: true } } },
+												},
+												DebitedAccountId: {
+													select: { User: { select: { username: true } } },
+												},
+											},
+									  }
 									: false,
 
 							cash_out:
 								additional_filter === "cash_out" ||
 								filter_by === "cash_out" ||
 								filter_by === "date"
-									? { orderBy: { createdAt: order_by ?? "asc" } }
+									? {
+											orderBy: { createdAt: order_by ?? "asc" },
+											include: {
+												CreditedAccountId: {
+													select: { User: { select: { username: true } } },
+												},
+												DebitedAccountId: {
+													select: { User: { select: { username: true } } },
+												},
+											},
+									  }
 									: false,
 						},
 					})

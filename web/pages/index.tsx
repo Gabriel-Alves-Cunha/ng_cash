@@ -45,6 +45,12 @@ export default function Index() {
 
 			api.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
 
+			console.log(
+				'api.defaults.headers.common["Authorization"] =',
+				api.defaults.headers.common["Authorization"]
+			);
+
+
 			await router.push("/user");
 		} catch (error) {
 			console.error("Error fetching " + url, error);
@@ -60,7 +66,7 @@ export default function Index() {
 			<div className="w-1/2 h-full">
 				<Image
 					alt="A mountain with an orange and blue sky."
-					className="h-full"
+					className="h-full aspect-auto"
 					placeholder="blur"
 					src={bgHome}
 				/>
@@ -68,7 +74,7 @@ export default function Index() {
 
 			<div className="relative w-1/2 h-full flex flex-col justify-center items-center">
 				<Image
-					className="bg-black box-content p-3 w-24 h-16 rounded-xl"
+					className="bg-black box-content p-3 w-24 h-16 rounded-xl aspect-auto"
 					alt="NG.Cash's logo, it's name with a risc below it."
 					src={logo}
 				/>
@@ -108,15 +114,9 @@ export default function Index() {
 					</label>
 
 					{apiToCall === "login" ? (
-						<Button
-							className="mt-16"
-							variant="primary"
-							title="Entrar"
-							type="submit"
-						/>
+						<Button.Primary className="mt-16" title="Entrar" type="submit" />
 					) : (
-						<Button
-							variant="secondary"
+						<Button.Secondary
 							title="Cadastrar"
 							className="mt-16"
 							type="submit"

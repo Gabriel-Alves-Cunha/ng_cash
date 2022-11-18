@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeAll, it } from "vitest";
+import { describe, test, expect, beforeAll } from "vitest";
 import { promisify } from "node:util";
 import { exec } from "node:child_process";
 
@@ -47,7 +47,7 @@ describe("Testing route '/api/user/me'", () => {
 			.get("/api/user/me")
 			.set({ Authorization: `Bearer ${token}` });
 
-		expect(res.body.user.username).toEqual(user1_info.username);
-		expect(res.body.user.Account.balance).toEqual(100_000);
+		expect(res.body.username).toEqual(user1_info.username);
+		expect(res.body.balance).toEqual(100_000);
 	});
 });

@@ -7,11 +7,11 @@ export async function userRoutes(fastify: FastifyInstance) {
 	fastify.get("/api/user/me", { onRequest: [authenticate] }, async req => {
 		try {
 			const user = await prisma.user.findUniqueOrThrow({
+				select: { Account: true, username: true },
 				where: { id: req.user.sub },
-				include: { Account: true },
 			});
 
-			return { user };
+			return { username: user.username, balance: user.Account.balance };
 		} catch (error) {
 			console.error(
 				"Error reading user's account at '/api/user/balance':",

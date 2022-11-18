@@ -1,10 +1,4 @@
-import {
-	ArrowsLeftRight,
-	CaretRight,
-	SignOut,
-	Barcode,
-	User,
-} from "phosphor-react";
+import { ArrowsLeftRight, SignOut, Barcode, User } from "phosphor-react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 
@@ -22,72 +16,79 @@ export function DashboardLayout({ children, buttonActivatedName }: Props) {
 	const gotoMakeTransactions = async () =>
 		await router.push("/make-transaction");
 
+	console.log(
+		'api.defaults.headers.common["Authorization"] =',
+		api.defaults.headers.common["Authorization"]
+	);
+
 	async function logout() {
 		api.defaults.headers.common["Authorization"] = undefined;
+
+		console.log(
+			'api.defaults.headers.common["Authorization"] =',
+			api.defaults.headers.common["Authorization"]
+		);
 
 		await router.push("/");
 	}
 
 	return (
-		<div className="flex h-screen w-screen bg-dashboard-primary">
-			<aside className="flex flex-col w-96">
-				<Image src={logo} alt="NG.Cash's logo with a risc below it." />
+		<div className="flex h-screen w-screen bg-dashboard-primary overflow-hidden">
+			<aside className="flex flex-col w-96 p-9 gap-2">
+				<Image
+					className="bg-black box-content p-3 w-20 h-14 rounded-xl mx-auto"
+					alt="NG.Cash's logo with a risc below it."
+					src={logo}
+				/>
 
-				<Button
+				<Button.Aside
 					className={
-						"mt-9 " +
-						(buttonActivatedName === "user" ? "bg-button-aside-hovered" : "")
+						"mt-11 text-sm text-gray-400 font-normal " +
+						(buttonActivatedName === "user"
+							? "bg-button-aside-hovered text-selected border-selected border-[1px] font-normal"
+							: "")
 					}
-					Arrow={
-						buttonActivatedName === "user" ? <CaretRight size={32} /> : null
-					}
-					Icon={<User size={32} />}
+					showArrow={buttonActivatedName === "user"}
 					onClick={gotoUser}
 					title="User info"
-					variant="aside"
+					Icon={User}
 				/>
 
-				<Button
+				<Button.Aside
 					className={
-						buttonActivatedName === "transactions" ? "bg-button-aside-hovered" : ""
+						(buttonActivatedName === "transactions"
+							? "bg-button-aside-hovered text-sm text-selected border-selected border-[1px] font-normal"
+							: "") + "text-sm text-gray-400 font-normal"
 					}
-					Arrow={
-						buttonActivatedName === "transactions" ? <CaretRight size={32} /> : null
-					}
-					Icon={<ArrowsLeftRight size={32} />}
+					showArrow={buttonActivatedName === "transactions"}
 					onClick={gotoTransactions}
+					Icon={ArrowsLeftRight}
 					title="Transactions"
-					variant="aside"
 				/>
 
-				<Button
+				<Button.Aside
 					className={
-						buttonActivatedName === "make-transaction"
-							? "bg-button-aside-hovered"
-							: ""
+						(buttonActivatedName === "make-transaction"
+							? "bg-button-aside-hovered text-sm text-selected border-selected border-[1px] font-normal"
+							: "") + "text-sm text-gray-400 font-normal"
 					}
-					Arrow={
-						buttonActivatedName === "make-transaction" ? (
-							<CaretRight size={32} />
-						) : null
-					}
+					showArrow={buttonActivatedName === "make-transaction"}
 					onClick={gotoMakeTransactions}
-					Icon={<Barcode size={32} />}
 					title="Make transation"
-					variant="aside"
+					Icon={Barcode}
 				/>
 
-				<Separator className="my-6" />
+				<Separator className="my-6 mx-auto" />
 
-				<Button
-					Icon={<SignOut size={32} />}
-					variant="secondary"
+				<Button.Secondary
+					className="mt-auto"
 					onClick={logout}
-					title="Deslogar"
+					Icon={SignOut}
+					title="Sair"
 				/>
 			</aside>
 
-			<main className="bg-dashboard-secondary h-full w-full m-5 ml-0 p-7 rounded-[30px]">
+			<main className="bg-dashboard-secondary h-full max-h-full max-w-full w-full m-5 ml-0 p-7 rounded-[30px]">
 				{children}
 			</main>
 		</div>

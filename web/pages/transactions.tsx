@@ -14,6 +14,8 @@ export default function Transactions() {
 	const filterByRef = useRef<HTMLSelectElement>(null);
 	const orderByRef = useRef<HTMLSelectElement>(null);
 
+	console.log("Transactions =", { transactions, error, isLoading });
+
 	if (error || transactions?.message)
 		return (
 			<div className="h-full w-full flex items-center justify-center text-xl font-normal">
@@ -28,7 +30,6 @@ export default function Transactions() {
 			</div>
 		);
 
-	console.log("Transactions =", { transactions });
 	const allTransaction = [...transactions.cash_in, ...transactions.cash_out];
 
 	async function filterOrOrderBy() {

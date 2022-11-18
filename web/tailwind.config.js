@@ -8,6 +8,7 @@ module.exports = {
 		extend: {
 			colors: {
 				accent: "#2F80ED80",
+				selected: "#2F80ED",
 			},
 			textColor: {
 				primary: "#1A202C",
@@ -23,8 +24,7 @@ module.exports = {
 				"button-secondary": "#0497c4",
 				"button-secondary-hovered": "#048ab3",
 
-				"button-aside": "transparent",
-				"button-aside-hovered": "#2F80ED10",
+				"button-aside-hovered": "#2F80ED30",
 
 				"dashboard-secondary": "#ffffff",
 				"dashboard-primary": "#F5F5F5",

@@ -16,9 +16,9 @@ export const cashOutInformationFromBody = z.object({
 	amount_to_cash_out: z.number().min(1 /* centavo */).positive(),
 });
 
-const availableFilters = ["cash_out", "cash_in", "date"] as const;
-const additionalFilters = ["cash_out", "cash_in"] as const;
-const availableOrders = ["asc", "desc"] as const;
+export const availableFilters = ["cash_out", "cash_in", "date"] as const;
+export const additionalFilters = ["cash_out", "cash_in"] as const;
+export const availableOrders = ["asc", "desc"] as const;
 
 export const filterByFromQuery = z.object({
 	additional_filter: z.enum(additionalFilters).optional(),
