@@ -12,7 +12,7 @@ api.interceptors.request.use(
 		if (authToken) {
 			config.headers!["Authorization"] = `Bearer ${authToken}`;
 
-			console.log("Token found ");
+			console.log("Token found. config.headers =", config.headers);
 		}
 
 		return config;

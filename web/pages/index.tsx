@@ -60,7 +60,7 @@ export default function Index() {
 			<div className="w-1/2 h-full">
 				<Image
 					alt="A mountain with an orange and blue sky."
-					className="h-full w-auto"
+					className="h-full"
 					placeholder="blur"
 					src={bgHome}
 				/>
@@ -87,6 +87,7 @@ export default function Index() {
 						<input
 							className="mt-3 h-12 border-lightgray rounded-[5px] border-solid border-[1px] px-5 py-2"
 							placeholder="Fulano da Silva"
+							defaultValue="Fulano Alves" // For debuggin purposes!
 							name="username"
 							type="text"
 							max={100}
@@ -100,6 +101,7 @@ export default function Index() {
 						<input
 							className="mt-3 h-12 border-lightgray rounded-[5px] border-solid border-[1px] px-5 py-2"
 							name="plainTextPassword"
+							defaultValue="A2345678" // For debuggin purposes!
 							type="password"
 							required
 							max={30}

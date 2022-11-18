@@ -9,18 +9,18 @@ export function useUser() {
 
 	return {
 		user: {
-			username: data?.body?.username,
-			balance: data?.body?.balance,
+			username: data?.data?.username,
+			balance: data?.data?.balance,
 		},
-		error: data?.body?.message || error?.message,
+		error: data?.data?.message || error?.message,
 		isLoading: !error && !data,
 	};
 }
 
 interface UserResponse {
-	body?: {
+	data?: {
+		message?: string;
 		username: string;
 		balance: number;
-		message?: string;
 	};
 }

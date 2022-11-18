@@ -77,7 +77,7 @@ export function DashboardLayout({ children, buttonActivatedName }: Props) {
 				/>
 			</aside>
 
-			<main className="bg-dashboard-secondary h-full max-h-full max-w-full w-full m-5 ml-0 p-7 rounded-[30px]">
+			<main className="bg-dashboard-secondary h-auto w-full m-5 ml-0 p-7 rounded-[30px]">
 				{children}
 			</main>
 		</div>

@@ -6,8 +6,6 @@ import { useUser } from "hooks/useUser";
 export default function User() {
 	const { user, error, isLoading } = useUser();
 
-	console.log("User =", { user, error, isLoading });
-
 	if (error)
 		return (
 			<div className="h-full w-full flex items-center justify-center text-xl font-normal">

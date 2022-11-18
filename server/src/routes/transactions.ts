@@ -114,7 +114,7 @@ export async function transactionRoutes(fastify: FastifyInstance) {
 			} catch (error) {
 				console.error("Error cashing out:", error);
 
-				return { success: false, message: error };
+				return { success: false, message: (error as Error).message };
 			}
 		}
 	);
@@ -129,26 +129,47 @@ export async function transactionRoutes(fastify: FastifyInstance) {
 
 		try {
 			// Get all Transactions
-			const allTransactions = await prisma.account
-				.findMany({
-					where: {
-						User: { every: { id: req.user.sub } },
+			const userWithAccountAndTransactions = await prisma.user
+				.findUniqueOrThrow({
+					where: { id: req.user.sub },
+					select: {
+						Account: {
+							select: {
+								cash_out: {
+									include: {
+										CreditedAccountId: {
+											select: { User: { select: { username: true } } },
+										},
+										DebitedAccountId: {
+											select: { User: { select: { username: true } } },
+										},
+									},
+								},
+								cash_in: {
+									include: {
+										CreditedAccountId: {
+											select: { User: { select: { username: true } } },
+										},
+										DebitedAccountId: {
+											select: { User: { select: { username: true } } },
+										},
+									},
+								},
+							},
+						},
 					},
-					select: { cash_in: true, cash_out: true },
 				})
 				.catch(err => {
-					throw new Error(
-						"Error finding all accounts with all transactions: " + err
-					);
+					throw new Error("Error finding user with all transactions: " + err);
 				});
 
 			log({
-				"Transactions by account": allTransactions,
+				userWithAccountAndTransactions,
 			});
 
 			return {
-				cash_out: allTransactions[0]!.cash_out,
-				cash_in: allTransactions[0]!.cash_in,
+				cash_out: userWithAccountAndTransactions.Account.cash_out,
+				cash_in: userWithAccountAndTransactions.Account.cash_in,
 			};
 		} catch (error) {
 			console.error(
@@ -156,7 +177,7 @@ export async function transactionRoutes(fastify: FastifyInstance) {
 				error
 			);
 
-			return { message: error };
+			return { message: (error as Error).message };
 		}
 	});
 

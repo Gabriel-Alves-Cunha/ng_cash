@@ -5,27 +5,43 @@ import useSWR from "swr";
 
 import { api } from "lib/axios";
 
-export function useTransactions() {
-	const { data, error, mutate } = useSWR<TransactionResponse, AxiosError>(
-		"/api/transactions",
+export function useTransactions(urlWithFilters: string) {
+	const { data, error } = useSWR<TransactionResponse, AxiosError>(
+		urlWithFilters
+			? "/api/transactions-filtered?" + urlWithFilters
+			: "/api/transactions",
 		api
 	);
 
+	console.log("From useTransactions:", { data, error });
+
 	return {
 		transactions: {
-			cash_out: data?.body?.cash_out,
-			cash_in: data?.body?.cash_in,
+			cash_out: data?.data?.cash_out ?? [],
+			cash_in: data?.data?.cash_in ?? [],
 		},
-		error: data?.body?.message || error?.message,
+		error: data?.data?.message || error?.message,
 		isLoading: !error && !data,
-		mutate,
 	};
 }
 
 interface TransactionResponse {
-	body?: {
-		cash_out: Transaction[];
-		cash_in: Transaction[];
+	data?: {
+		cash_out: TransactionFromApi;
+		cash_in: TransactionFromApi;
 		message?: string;
 	};
 }
+
+type TransactionFromApi = (Transaction & {
+	CreditedAccountId: {
+		User: {
+			username: string;
+		}[];
+	};
+	DebitedAccountId: {
+		User: {
+			username: string;
+		}[];
+	};
+})[];
