@@ -61,7 +61,7 @@ describe("Testing route '/api/transactions'", () => {
 			})
 			.set({ Authorization: `Bearer ${authToken_user_1}` });
 
-		expect(res.body.balance).toBe(50_000);
+		expect(res.body.balance).toBe(90000);
 		expect(res.body.success).toBe(true);
 	});
 
@@ -74,7 +74,7 @@ describe("Testing route '/api/transactions'", () => {
 			})
 			.set({ Authorization: `Bearer ${authToken_user_2}` });
 
-		expect(res.body.balance).toBe(80_000);
+		expect(res.body.balance).toBe(40000);
 		expect(res.body.success).toBe(true);
 	});
 
@@ -85,7 +85,7 @@ describe("Testing route '/api/transactions'", () => {
 
 		log("On filter by date and order asc:", res.body);
 
-		expect(res.body.cash_out).toHaveLength(1);
-		expect(res.body.cash_in).toHaveLength(1);
+		expect(res.body.cash_out).toHaveLength(3);
+		expect(res.body.cash_in).toHaveLength(3);
 	});
 });

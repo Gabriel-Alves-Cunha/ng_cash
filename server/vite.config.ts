@@ -1,11 +1,9 @@
 import { configDefaults } from "vitest/config";
 import { VitePluginNode } from "vite-plugin-node";
-import { builtinModules } from "node:module";
 import { defineConfig } from "vite";
 import { resolve } from "node:path";
 
-const builtinModulesWithNode = builtinModules.map(mod => `node:${mod}`);
-const allBuiltinModules = builtinModulesWithNode.concat(builtinModules);
+const minify = false;
 
 export default defineConfig({
 	server: {
@@ -32,7 +30,7 @@ export default defineConfig({
 		rollupOptions: {
 			// make sure to externalize deps that shouldn't be bundled
 			// into your library
-			external: [...allBuiltinModules, "mock-aws-s3", "aws-sdk", "nock"],
+			// external: [...allBuiltinModules, "mock-aws-s3", "aws-sdk", "nock"],
 			input: resolve(__dirname, "src/startServer.ts"),
 			preserveEntrySignatures: "strict",
 			strictDeprecations: true,
@@ -44,25 +42,30 @@ export default defineConfig({
 					constBindings: true,
 					preset: "es2015",
 				},
-				minifyInternalExports: false,
+				entryFileNames: "startServer.mjs",
+				minifyInternalExports: minify,
 				sourcemap: false,
 				dir: "./build",
 				format: "esm",
 			},
 		},
 
+		lib: {
+			entry: "src/startServer.ts",
+			formats: ["es"],
+		},
+		minify: minify ? "esbuild" : false,
 		chunkSizeWarningLimit: 1_000,
 		reportCompressedSize: false,
-		emptyOutDir: false,
+		emptyOutDir: true,
 		sourcemap: false,
-		target: "esnext",
-		minify: false,
+		target: "node18",
 	},
 
 	esbuild: {
-		minifyIdentifiers: false,
-		minifyWhitespace: false,
-		minifySyntax: false,
+		minifyIdentifiers: minify,
+		minifyWhitespace: minify,
+		minifySyntax: minify,
 		treeShaking: true,
 		sourcemap: false,
 		target: "esnext",
@@ -72,10 +75,6 @@ export default defineConfig({
 		format: "esm",
 		logLimit: 10,
 		color: true,
-	},
-
-	optimizeDeps: {
-		exclude: [...allBuiltinModules, "mock-aws-s3", "aws-sdk", "nock"],
 	},
 
 	test: {

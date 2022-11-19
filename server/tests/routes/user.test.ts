@@ -48,6 +48,6 @@ describe("Testing route '/api/user/me'", () => {
 			.set({ Authorization: `Bearer ${authToken}` });
 
 		expect(res.body.username).toEqual(user1_info.username);
-		expect(res.body.balance).toEqual(100_000);
+		expect(res.body.balance).toEqual(140000);
 	});
 });

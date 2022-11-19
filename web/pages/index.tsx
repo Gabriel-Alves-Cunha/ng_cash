@@ -3,6 +3,7 @@ import { useState } from "react";
 import Image from "next/image";
 
 import { Button } from "components/Button";
+import { Input } from "components/Input";
 import { api } from "lib/axios";
 
 import bgHome from "../public/bg-home.png";
@@ -84,8 +85,7 @@ export default function Index() {
 
 					<label className="flex flex-col text-secondary font-normal leading-5 mt-6">
 						Nome de usuário
-						<input
-							className="mt-3 h-12 border-lightgray rounded-[5px] border-solid border-[1px] px-5 py-2"
+						<Input
 							placeholder="Fulano da Silva"
 							defaultValue="Fulano Alves" // For debuggin purposes!
 							name="username"
@@ -98,8 +98,7 @@ export default function Index() {
 
 					<label className="flex flex-col text-secondary font-normal leading-5 mt-6">
 						Senha
-						<input
-							className="mt-3 h-12 border-lightgray rounded-[5px] border-solid border-[1px] px-5 py-2"
+						<Input
 							name="plainTextPassword"
 							defaultValue="A2345678" // For debuggin purposes!
 							type="password"

@@ -5,10 +5,12 @@
 	"license": "MIT",
 	"type": "module",
 	"scripts": {
+		"start:docker": "sudo docker run -p 3456:3456 server-ng-cash # add `-d` to run in bg",
 		"ts:check": "tsc --noEmit --pretty --extendedDiagnostics",
-		"start": "node --trace-warnings build/startServer.js",
+		"build:docker": "sudo docker build . -t server-ng-cash",
 		"reset-database": "prisma migrate reset --force",
-		"build": "vite build",
+		"start:server": "node build/startServer.mjs",
+		"build:server": "vite build",
 		"test": "vitest",
 		"dev": "vite"
 	},
@@ -30,7 +32,7 @@
 		"@types/node": "^18.11.9",
 		"@types/supertest": "^2.0.12",
 		"prisma": "^4.6.1",
-		"prisma-erd-generator": "^1.2.3",
+		"prisma-erd-generator": "^1.2.4",
 		"supertest": "^6.3.1",
 		"typescript": "^4.9.3",
 		"vite": "^3.2.4",
