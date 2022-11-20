@@ -8,6 +8,7 @@
 		"start:docker": "sudo docker run -p 3456:3456 server-ng-cash # add `-d` to run in bg",
 		"ts:check": "tsc --noEmit --pretty --extendedDiagnostics",
 		"build:docker": "sudo docker build . -t server-ng-cash",
+		"build": "yarn build:server && yarn build:docker",
 		"reset-database": "prisma migrate reset --force",
 		"start:server": "node build/startServer.mjs",
 		"build:server": "vite build",

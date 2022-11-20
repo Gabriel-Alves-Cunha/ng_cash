@@ -9,7 +9,7 @@ ENV NODE_ENV=production
 # Next we create a directory to hold the application code
 # inside the image, this will be the working directory for your application:
 WORKDIR /usr/my-application-code/
-COPY "package.json" "./"
+COPY ["package.json", "./prisma/schema.prisma", "./"]
 
 RUN yarn --production
 
@@ -29,10 +29,11 @@ RUN chown -R node /usr/my-application-code/
 USER node
 
 RUN echo && echo Node version: 							&& node --version			&& echo
-RUN echo && echo Present working directory 	&& pwd								&& echo
 RUN echo && echo Files in pwd 							&& ls -lh							&& echo
 RUN echo && echo Files in ./build 					&& ls -lh ./build/		&& echo
 RUN echo && echo Size of pwd 								&& du -sh							&& echo
+
+RUN yarn prisma generate
 
 # We need to define the command to launch when we are going to run the image.
 # We use the keyword 'CMD' to do that.

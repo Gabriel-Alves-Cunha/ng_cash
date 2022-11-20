@@ -6,12 +6,13 @@ generator client {
   previewFeatures = ["interactiveTransactions"]
 }
 
-generator erd {
-  provider                  = "prisma-erd-generator"
-  theme                     = "forest"
-  includeRelationFromFields = true
-  erdDebug                  = false
-}
+// I comment this when I'm building for docker, to have a smaller image. Else, uncomment.
+// generator erd {
+//   provider                  = "prisma-erd-generator"
+//   theme                     = "forest"
+//   includeRelationFromFields = true
+//   erdDebug                  = false
+// }
 
 datasource db {
   provider = "sqlite"
